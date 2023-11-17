@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.unihack2023.databinding.FragmentHomeBinding
+import com.google.cloud.translate.*
 
 class HomeFragment : Fragment() {
 
@@ -16,6 +17,7 @@ class HomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private val APIkey:String = "AIzaSyDecAm1Ox2jSa3mqo12HxWl-BlK0_JFzkE"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,13 +32,32 @@ class HomeFragment : Fragment() {
 
         val textView: TextView = binding.textHome
         homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+            textView.text = translateText("Hallo, vielen Dank!")
         }
+
         return root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun translateText(text: String): String {
+        try {
+            val translate = TranslateOptions.newBuilder().setApiKey(APIkey).build().service
+            val detection: Detection = translate.detect(text)
+            val detectedLanguage = detection.language
+            val translation = translate.translate(
+                text,
+                TranslateOption.sourceLanguage(detectedLanguage),
+                TranslateOption.targetLanguage("en")
+            )
+            return translation.translatedText
+        } catch (e: Exception) {
+            // Log the exception to help identify the issue
+            e.printStackTrace()
+            return "Translation failed"
+        }
     }
 }

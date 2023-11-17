@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.unihack2023"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.unihack2023"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -36,6 +36,17 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    packagingOptions {
+        exclude ("META-INF/DEPENDENCIES")
+        exclude ("META-INF/LICENSE")
+        exclude ("META-INF/LICENSE.txt")
+        exclude ("META-INF/license.txt")
+        exclude ("META-INF/NOTICE")
+        exclude ("META-INF/NOTICE.txt")
+        exclude ("META-INF/notice.txt")
+        exclude ("META-INF/ASL2.0")
+        exclude ("META-INF/INDEX.LIST")
+    }
 }
 
 dependencies {
@@ -51,4 +62,5 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation ("com.google.cloud:google-cloud-translate:2.6.0")
 }
