@@ -8,7 +8,10 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.unihack2023.databinding.FragmentHomeBinding
-import com.google.cloud.translate.*
+import com.google.cloud.translate.Detection
+import com.google.cloud.translate.Translate.TranslateOption
+import com.google.cloud.translate.TranslateOptions
+import android.util.Log
 
 class HomeFragment : Fragment() {
 
@@ -57,6 +60,7 @@ class HomeFragment : Fragment() {
         } catch (e: Exception) {
             // Log the exception to help identify the issue
             e.printStackTrace()
+            Log.e("Error", e.toString())
             return "Translation failed"
         }
     }
