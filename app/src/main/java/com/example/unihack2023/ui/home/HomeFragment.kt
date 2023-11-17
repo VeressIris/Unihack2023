@@ -18,7 +18,6 @@ import com.google.cloud.translate.Translate.TranslateOption
 import com.google.cloud.translate.TranslateOptions
 import kotlinx.coroutines.*
 
-
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
@@ -55,12 +54,11 @@ class HomeFragment : Fragment() {
         networkScope.launch {
             val lyrics = translateText(searchLyrics())
             withContext(Dispatchers.Main) {
-                mainText.text = lyrics
+                mainText.text = lyrics.replace("&#39;", "'").replace("&quot;", "\"").replace("\\n", "\n").replace("\\ n", "\n")
             }
         }
 
         mainText.setMovementMethod(ScrollingMovementMethod())
-
     }
 
     override fun onDestroyView() {
@@ -90,16 +88,14 @@ class HomeFragment : Fragment() {
         }
     }
 
-
     private suspend fun searchLyrics(): String {
         val deferred = CompletableDeferred<String>()
 
         lyricsSearchManager.searchLyrics(songName, GeniusAPIkey) { results ->
-            if (results != null && results.isNotEmpty()) {
+            if (!results.isNullOrEmpty()) {
                 CoroutineScope(Dispatchers.IO).launch {
                     val websiteTextFetcher = WebsiteTextFetcher()
-                    val websiteText =
-                        getLyricsFromSite(websiteTextFetcher.fetchTextFromUrl(results[0].url))
+                    val websiteText = websiteTextFetcher.parseLyrics(getLyricsFromSite(websiteTextFetcher.fetchTextFromUrl(results[0].url)))
                     deferred.complete(websiteText)
                 }
             } else {
@@ -111,12 +107,11 @@ class HomeFragment : Fragment() {
         return deferred.await()
     }
 
-
-    fun getLyricsFromSite(text: String):String {
+    private fun getLyricsFromSite(text: String):String {
         val start: Int = text.indexOf('[')
         val end: Int = text.indexOf("Embed")
 
-        var str = text.substring(start, end)
+        val str = text.substring(start, end)
 
         var i: Int = str.length - 1
         while (text[i] != ' ') {
@@ -125,5 +120,4 @@ class HomeFragment : Fragment() {
 
         return str.substring(0, i - 1)
     }
-
 }

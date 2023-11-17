@@ -67,4 +67,5 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0") // For JSON parsing with Gson
     implementation ("com.squareup.okhttp3:okhttp:4.9.1")
     implementation ("org.jsoup:jsoup:1.14.3")
+    implementation("org.apache.commons:commons-text:1.9")
 }
