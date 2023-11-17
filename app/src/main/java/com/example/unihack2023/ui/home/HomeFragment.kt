@@ -28,7 +28,7 @@ class HomeFragment : Fragment() {
     private val GoogleAPIkey:String = "AIzaSyC6OOmcv32-NvpVqWm_6QXkwNflZu5HDN0"
     private val GeniusAPIkey:String = "G5eF63EO4TJaDTCDc_FqsUvQF8A9u6l_Ob9F3G-GIu7J2x6BojRJjplN2hPfNacA"
 
-    var songName:String = "Paint the town red"
+    var songName:String = "wish you were gay"
     val lyricsSearchManager = LyricsSearchManager()
 
     private val networkScope = CoroutineScope(Dispatchers.IO)
@@ -120,8 +120,16 @@ class HomeFragment : Fragment() {
 
     fun getLyricsFromSite(text: String):String {
         val start: Int = text.indexOf('[')
-        val end: Int = text.lastIndexOf(']')
-        return text.substring(start, end)
+        val end: Int = text.indexOf("Embed")
+
+        var str = text.substring(start, end)
+
+        var i: Int = str.length - 1
+        while (text[i] != ' ') {
+            i--
+        }
+
+        return str.substring(0, i - 1)
     }
 
 }
