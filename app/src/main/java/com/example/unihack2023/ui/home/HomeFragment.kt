@@ -16,15 +16,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.unihack2023.LyricsSearchManager
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
-    private val APIkey:String = "AIzaSyC6OOmcv32-NvpVqWm_6QXkwNflZu5HDN0"
+    private val GoogleAPIkey:String = "AIzaSyC6OOmcv32-NvpVqWm_6QXkwNflZu5HDN0"
+    private val GeniusAPIkey:String = "G5eF63EO4TJaDTCDc_FqsUvQF8A9u6l_Ob9F3G-GIu7J2x6BojRJjplN2hPfNacA"
+
+    var songName:String = "Paint the town red"
+    val lyricsSearchManager = LyricsSearchManager()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,10 +42,16 @@ class HomeFragment : Fragment() {
 
         val textView: TextView = binding.textHome
         homeViewModel.text.observe(viewLifecycleOwner) {
-            translateText("Hallo, vielen Dank!", textView)
+            translateText("Hallo, Welt!", textView)
         }
 
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        searchLyrics()
     }
 
     override fun onDestroyView() {
@@ -53,7 +62,7 @@ class HomeFragment : Fragment() {
     private fun translateText(text: String, textView: TextView) {
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                val translate = TranslateOptions.newBuilder().setApiKey(APIkey).build().service
+                val translate = TranslateOptions.newBuilder().setApiKey(GoogleAPIkey).build().service
                 val detection: Detection = translate.detect(text)
                 val detectedLanguage = detection.language
                 val translation = translate.translate(
@@ -75,6 +84,22 @@ class HomeFragment : Fragment() {
                 withContext(Dispatchers.Main) {
                     textView.text = "Translation failed"
                 }
+            }
+        }
+    }
+
+    fun searchLyrics() {
+        lyricsSearchManager.searchLyrics(songName, GeniusAPIkey) { results ->
+            if (results != null) {
+                Log.i("LyricResult", results[0].url)
+                // Handle results (e.g., display in UI)
+
+//                results.forEach { result ->
+//                    Log.d("LyricsSearch", "Title: ${result.title}, URL: ${result.url}")
+//                }
+            } else {
+                // Handle error or no results
+                Log.e("LyricsSearch", "Failed to fetch lyrics")
             }
         }
     }
