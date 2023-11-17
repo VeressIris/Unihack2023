@@ -12,6 +12,10 @@ import com.google.cloud.translate.Detection
 import com.google.cloud.translate.Translate.TranslateOption
 import com.google.cloud.translate.TranslateOptions
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment() {
 
@@ -20,7 +24,7 @@ class HomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private val APIkey:String = "AIzaSyDecAm1Ox2jSa3mqo12HxWl-BlK0_JFzkE"
+    private val APIkey:String = "AIzaSyC6OOmcv32-NvpVqWm_6QXkwNflZu5HDN0"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,7 +39,7 @@ class HomeFragment : Fragment() {
 
         val textView: TextView = binding.textHome
         homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = translateText("Hallo, vielen Dank!")
+            translateText("Hallo, vielen Dank!", textView)
         }
 
         return root
@@ -46,22 +50,33 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun translateText(text: String): String {
-        try {
-            val translate = TranslateOptions.newBuilder().setApiKey(APIkey).build().service
-            val detection: Detection = translate.detect(text)
-            val detectedLanguage = detection.language
-            val translation = translate.translate(
-                text,
-                TranslateOption.sourceLanguage(detectedLanguage),
-                TranslateOption.targetLanguage("en")
-            )
-            return translation.translatedText
-        } catch (e: Exception) {
-            // Log the exception to help identify the issue
-            e.printStackTrace()
-            Log.e("Error", e.toString())
-            return "Translation failed"
+    private fun translateText(text: String, textView: TextView) {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val translate = TranslateOptions.newBuilder().setApiKey(APIkey).build().service
+                val detection: Detection = translate.detect(text)
+                val detectedLanguage = detection.language
+                val translation = translate.translate(
+                    text,
+                    TranslateOption.sourceLanguage(detectedLanguage),
+                    TranslateOption.targetLanguage("en")
+                )
+
+                // Update the UI on the Main thread
+                withContext(Dispatchers.Main) {
+                    textView.text = translation.translatedText
+                }
+            } catch (e: Exception) {
+                // Log the exception to help identify the issue
+                e.printStackTrace()
+                Log.e("Error", e.toString())
+
+                // Update the UI on the Main thread with error message
+                withContext(Dispatchers.Main) {
+                    textView.text = "Translation failed"
+                }
+            }
         }
     }
+
 }
