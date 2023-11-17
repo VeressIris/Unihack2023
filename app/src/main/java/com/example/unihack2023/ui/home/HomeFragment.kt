@@ -17,6 +17,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.unihack2023.LyricsSearchManager
+import com.example.unihack2023.WebsiteTextFetcher
+import kotlinx.coroutines.*
 
 class HomeFragment : Fragment() {
 
@@ -28,6 +30,8 @@ class HomeFragment : Fragment() {
 
     var songName:String = "Paint the town red"
     val lyricsSearchManager = LyricsSearchManager()
+
+    private val networkScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,11 +55,15 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        searchLyrics()
+        networkScope.launch {
+            searchLyrics()
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        super.onDestroy()
+        networkScope.cancel()
         _binding = null
     }
 
@@ -88,20 +96,32 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun searchLyrics() {
-        lyricsSearchManager.searchLyrics(songName, GeniusAPIkey) { results ->
-            if (results != null) {
-                Log.i("LyricResult", results[0].url)
-                // Handle results (e.g., display in UI)
+    private suspend fun searchLyrics() {
+        withContext(Dispatchers.Default) {
+            lyricsSearchManager.searchLyrics(songName, GeniusAPIkey) { results ->
+                if (results != null) {
+                    Log.i("LyricResult", results[0].url)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val websiteTextFetcher = WebsiteTextFetcher()
+                        val websiteText = getLyricsFromSite(websiteTextFetcher.fetchTextFromUrl(results[0].url))
+                        Log.i("TEXT", websiteText)
 
-//                results.forEach { result ->
-//                    Log.d("LyricsSearch", "Title: ${result.title}, URL: ${result.url}")
-//                }
-            } else {
-                // Handle error or no results
-                Log.e("LyricsSearch", "Failed to fetch lyrics")
+                        // Handle fetched text here or update UI
+                    }
+
+
+                } else {
+                    // Handle error or no results
+                    Log.e("LyricsSearch", "Failed to fetch lyrics")
+                }
             }
         }
+    }
+
+    fun getLyricsFromSite(text: String):String {
+        val start: Int = text.indexOf('[')
+        val end: Int = text.lastIndexOf(']')
+        return text.substring(start, end)
     }
 
 }
