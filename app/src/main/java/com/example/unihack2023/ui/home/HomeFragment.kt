@@ -7,41 +7,42 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.unihack2023.LyricsSearchManager
 import com.example.unihack2023.R
 import com.example.unihack2023.WebsiteTextFetcher
+import com.example.unihack2023.databinding.AppBarMainBinding
 import com.example.unihack2023.databinding.FragmentHomeBinding
 import com.google.cloud.translate.Detection
 import com.google.cloud.translate.Translate.TranslateOption
 import com.google.cloud.translate.TranslateOptions
 import kotlinx.coroutines.*
+import androidx.appcompat.widget.Toolbar
+import com.example.unihack2023.MainActivity
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-
     private val binding get() = _binding!!
+
     private val GoogleAPIkey:String = "AIzaSyC6OOmcv32-NvpVqWm_6QXkwNflZu5HDN0"
     private val GeniusAPIkey:String = "G5eF63EO4TJaDTCDc_FqsUvQF8A9u6l_Ob9F3G-GIu7J2x6BojRJjplN2hPfNacA"
-
-    var songName:String = "Cro - Easy"
     val lyricsSearchManager = LyricsSearchManager()
-
     private val networkScope = CoroutineScope(Dispatchers.IO)
+
+    val songName:String = "Cro Easy"
+
+    val mainActivity = MainActivity()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
-
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        val textView: TextView = binding.textHome
 
         return root
     }

@@ -12,12 +12,22 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.example.unihack2023.databinding.ActivityMainBinding
-
+import androidx.appcompat.widget.Toolbar
+import android.widget.Button
+import android.view.View
+import android.util.Log
+import com.google.android.material.textfield.TextInputEditText
+import android.widget.Spinner
+import android.widget.AdapterView
+import kotlinx.coroutines.selects.select
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+
+    var selectedItem:String? = null
+    public var langCode:String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +53,27 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val searchBttn = toolbar.findViewById<Button>(R.id.search_bttn)
+        val targetLanguage = toolbar.findViewById<Spinner>(R.id.languageSelector)
+
+        targetLanguage.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedItem = parent?.getItemAtPosition(position).toString()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Handle the case where nothing is selected if needed
+            }
+        }
+
+        searchBttn?.setOnClickListener {
+            val songInput = toolbar.findViewById<TextInputEditText>(R.id.searchSong_txtBox)
+
+            langCode = getLanguageCode()
+            Log.i("lang code", langCode.toString())
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -54,5 +85,11 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    public fun getLanguageCode():String {
+        val first = selectedItem.toString().indexOf("(")
+        val last = selectedItem.toString().indexOf(")")
+        return selectedItem.toString().substring(first + 1, last)
     }
 }
