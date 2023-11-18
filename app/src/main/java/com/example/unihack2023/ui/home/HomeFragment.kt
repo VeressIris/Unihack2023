@@ -76,7 +76,8 @@ class HomeFragment : Fragment() {
         textView.text = spannable
 
         // Enable clickable spans within the TextView
-        textView.movementMethod = LinkMovementMethod.getInstance()
+        textView.movementMethod = ScrollingMovementMethod.getInstance()
+        textView.isVerticalScrollBarEnabled = true
     }
 
 
