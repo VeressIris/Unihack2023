@@ -31,7 +31,7 @@ class WebsiteTextFetcher {
                         val html = responseBody.string()
                         val doc = Jsoup.parse(html)
                         doc.outputSettings(Document.OutputSettings().prettyPrint(false))
-                        doc.select("br").before("\\n")
+//                        doc.select("br").before("\\n")
                         doc.select("p").before("\\n")
 
                         return@withContext doc.text()
@@ -46,18 +46,26 @@ class WebsiteTextFetcher {
 
     fun parseLyrics(text: String): String {
         var aux = text
-        var start: Int = 0
-        var end: Int = 0
+        var start:Int = aux.indexOf("[")
+        var end:Int = aux.indexOf("]")
+
+        for (i in 1..2) {
+            start = aux.indexOf("[")
+            end = aux.indexOf("]")
+            aux = aux.replace(aux.substring(start, end + 1), "")
+        }
+
         do {
             start = aux.indexOf("[", start)
             if (start != -1) {
                 end = aux.indexOf("]", start)
                 if (end != -1) {
                     val substr = aux.substring(start, end + 1)
-                    aux = aux.replace(substr, "")
+                    aux = aux.replace(substr, "\\n\\n")
                 }
             }
         } while (start != -1 && end != -1)
+
         return aux
     }
 
