@@ -12,10 +12,74 @@
     <string name="menu_slideshow">Slideshow</string>
 
     <string-array name="languages">
-        <item>C</item>
-        <item>C++</item>
-        <item>Java</item>
-        <item>JavaScript</item>
-        <item>VisualBasic</item>
+        <item>Afrikaans (af)</item>
+        <item>Albanian (sq)</item>
+        <item>Arabic (ar)</item>
+        <item>Armenian (hy)</item>
+        <item>Azerbaijani (az)</item>
+        <item>Basque (eu)</item>
+        <item>Belarusian (be)</item>
+        <item>Bengali (bn)</item>
+        <item>Bosnian (bs)</item>
+        <item>Bulgarian (bg)</item>
+        <item>Catalan (ca)</item>
+        <item>Chinese (zh)</item>
+        <item>Corsican (co)</item>
+        <item>Croatian (hr)</item>
+        <item>Czech (cs)</item>
+        <item>Danish (da)</item>
+        <item>Dutch	 (nl)</item>
+        <item>Danish (da)</item>
+        <item>English (en)</item>
+        <item>Estonian (et)</item>
+        <item>Filipino (fil)</item>
+        <item>Finnish (fi)</item>
+        <item>French (fr)</item>
+        <item>Georgian (ka)</item>
+        <item>German (de)</item>
+        <item>Greek (el)</item>
+        <item>Hawaiian (haw)</item>
+        <item>Hindi (hi)</item>
+        <item>Hungarian (hu)</item>
+        <item>Icelandic (is)</item>
+        <item>Indonesian (id)</item>
+        <item>Irish (ga)</item>
+        <item>Italian (it)</item>
+        <item>Japanese (ja)</item>
+        <item>Kazakh (kk)</item>
+        <item>Korean (ko)</item>
+        <item>Latin (la)</item>
+        <item>Latvian (lv)</item>
+        <item>Lithuanian (lt)</item>
+        <item>Luxembourgish (lb)</item>
+        <item>Macedonian (mk)</item>
+        <item>Maltese (mt)</item>
+        <item>Mongolian (mn)</item>
+        <item>Nepali (ne)</item>
+        <item>Norwegian (no)</item>
+        <item>Persian (fa)</item>
+        <item>Polish (pl)</item>
+        <item>Portuguese (pt)</item>
+        <item>Romanian (ro)</item>
+        <item>Russian (ru)</item>
+        <item>Sanskrit (sa)</item>
+        <item>Serbian (sr)</item>
+        <item>Slovak (sk)</item>
+        <item>Slovenian (sl)</item>
+        <item>Somali (so)</item>
+        <item>Spanish (es)</item>
+        <item>Swedish (sv)</item>
+        <item>Thai (th)</item>
+        <item>Turkish (tr)</item>
+        <item>Ukrainian (uk)</item>
+        <item>Uzbek (uz)</item>
+        <item>Vietnamese (vi)</item>
+        <item>Welsh (cy)</item>
+        <item>Yiddish (yi)</item>
+        <item>Zulu (zu)</item>
+
+
+
+
     </string-array>
 </resources>
