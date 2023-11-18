@@ -29,13 +29,12 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
     private val GoogleAPIkey: String = "AIzaSyC6OOmcv32-NvpVqWm_6QXkwNflZu5HDN0"
     private val GeniusAPIkey: String = "G5eF63EO4TJaDTCDc_FqsUvQF8A9u6l_Ob9F3G-GIu7J2x6BojRJjplN2hPfNacA"
 
     val lyricsSearchManager = LyricsSearchManager()
     private val networkScope = CoroutineScope(Dispatchers.IO)
-
-    val songName:String = "Cro Easy"
 
     val mainActivity = MainActivity()
 
@@ -99,7 +98,7 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    public suspend fun translateText(text: String?): String {
+    public suspend fun translateText(text: String?, targetLang:String): String {
         return withContext(Dispatchers.IO) {
             try {
                 val translate =
@@ -109,7 +108,7 @@ class HomeFragment : Fragment() {
                 val translation = translate.translate(
                     text,
                     TranslateOption.sourceLanguage(detectedLanguage),
-                    TranslateOption.targetLanguage("en")
+                    TranslateOption.targetLanguage(targetLang)
                 )
                 translation.translatedText
             } catch (e: Exception) {
@@ -158,30 +157,13 @@ class HomeFragment : Fragment() {
     }
 
     fun clickOnWord(word: String) {
-        val translate = TranslateOptions.newBuilder().setApiKey("AIzaSyC6OOmcv32-NvpVqWm_6QXkwNflZu5HDN0").build().service
 
-        networkScope.launch {
-            try {
-                val translation = translate.translate(
-                    word,
-                    Translate.TranslateOption.targetLanguage("en")
-                )
-                val translatedWord = translation.translatedText
-
-                withContext(Dispatchers.Main) {
-                    // Update the TextView with the translated word if it's not null
-                    mainText?.append("$word -> $translatedWord\n")
-                }
-            } catch (e: Exception) {
-                Log.e("TranslationError", e.message ?: "Translation failed")
-            }
-        }
     }
 
-    public fun replaceSymbolsInLyrics(songName:String) {
+    public fun replaceSymbolsInLyrics(songName:String, targetLang: String) {
         Log.e("mainText", "i have been called " + mainText.toString())
         networkScope.launch {
-            val lyrics = translateText(searchLyrics(songName))
+            val lyrics = translateText(searchLyrics(songName), targetLang)
 
             withContext(Dispatchers.IO) {
                 mainText?.text = lyrics.replace("&#39;", "'").replace("&quot;", "\"").replace("\\n", "\n").replace("\\ n", "\n")
@@ -194,4 +176,6 @@ class HomeFragment : Fragment() {
     fun setMainTextUpdateCallback(callback: (String) -> Unit) {
         mainTextUpdateCallBack = callback
     }
+
+
 }

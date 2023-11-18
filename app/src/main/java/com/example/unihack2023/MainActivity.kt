@@ -1,5 +1,6 @@
 package com.example.unihack2023
 
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import com.google.android.material.snackbar.Snackbar
@@ -16,6 +17,7 @@ import androidx.appcompat.widget.Toolbar
 import android.widget.Button
 import android.view.View
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import com.google.android.material.textfield.TextInputEditText
 import android.widget.Spinner
 import android.widget.AdapterView
@@ -79,13 +81,15 @@ class MainActivity : AppCompatActivity() {
         val homeFrag:HomeFragment = HomeFragment()
         supportFragmentManager.beginTransaction().replace(R.id.drawer_layout, homeFrag).commit()
 
+        //Search for song:
         searchBttn?.setOnClickListener {
             val songInput = toolbar.findViewById<TextInputEditText>(R.id.searchSong_txtBox)
 
             langCode = getLanguageCode()
-            Log.i("lang code", langCode.toString())
 
-            homeFrag.replaceSymbolsInLyrics(songInput.text.toString())
+            closeKeyboard(songInput)
+
+            homeFrag.replaceSymbolsInLyrics(songInput.text.toString(), langCode.toString())
         }
     }
 
@@ -100,9 +104,14 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    public fun getLanguageCode():String {
+    fun getLanguageCode():String {
         val first = selectedItem.toString().indexOf("(")
         val last = selectedItem.toString().indexOf(")")
         return selectedItem.toString().substring(first + 1, last)
+    }
+
+    fun closeKeyboard(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
