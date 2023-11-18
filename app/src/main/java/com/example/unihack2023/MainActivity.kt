@@ -19,7 +19,12 @@ import android.util.Log
 import com.google.android.material.textfield.TextInputEditText
 import android.widget.Spinner
 import android.widget.AdapterView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import com.example.unihack2023.ui.home.HomeFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +33,8 @@ class MainActivity : AppCompatActivity() {
 
     var selectedItem:String? = null
     public var langCode:String? = null
+
+    private val networkScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val searchBttn = toolbar.findViewById<Button>(R.id.search_bttn)
         val targetLanguage = toolbar.findViewById<Spinner>(R.id.languageSelector)
@@ -68,11 +76,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val homeFrag:HomeFragment = HomeFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.drawer_layout, homeFrag).commit()
+
         searchBttn?.setOnClickListener {
             val songInput = toolbar.findViewById<TextInputEditText>(R.id.searchSong_txtBox)
 
             langCode = getLanguageCode()
             Log.i("lang code", langCode.toString())
+
+            homeFrag.replaceSymbolsInLyrics(songInput.text.toString())
         }
     }
 
