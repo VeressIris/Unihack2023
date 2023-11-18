@@ -21,14 +21,21 @@ import com.google.cloud.translate.TranslateOptions
 import kotlinx.coroutines.*
 import androidx.appcompat.widget.Toolbar
 import com.example.unihack2023.MainActivity
+import android.text.style.ClickableSpan
+import android.text.Spannable
+import com.google.cloud.translate.Translate
+import com.google.cloud.translate.Translation
+import android.text.method.LinkMovementMethod
+
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private val GoogleAPIkey: String = "AIzaSyC6OOmcv32-NvpVqWm_6QXkwNflZu5HDN0"
+    private val GeniusAPIkey: String = "G5eF63EO4TJaDTCDc_FqsUvQF8A9u6l_Ob9F3G-GIu7J2x6BojRJjplN2hPfNacA"
 
-    private val GoogleAPIkey:String = "AIzaSyC6OOmcv32-NvpVqWm_6QXkwNflZu5HDN0"
-    private val GeniusAPIkey:String = "G5eF63EO4TJaDTCDc_FqsUvQF8A9u6l_Ob9F3G-GIu7J2x6BojRJjplN2hPfNacA"
+    var songName: String = "Cro - Easy"
     val lyricsSearchManager = LyricsSearchManager()
     private val networkScope = CoroutineScope(Dispatchers.IO)
 
@@ -47,19 +54,53 @@ class HomeFragment : Fragment() {
         return root
     }
 
+    fun splitTextIntoWords(text: String): List<String> {
+        return text.split("[\\s]+".toRegex())
+    }
+
+    fun makeWordsClickable(textView: TextView) {
+        val spannable = Spannable.Factory.getInstance().newSpannable(textView.text)
+        val words = splitTextIntoWords(textView.text.toString())
+
+        var start = 0
+        words.forEach { word ->
+            val end = start + word.length
+            val clickableSpan = object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    // Handle word click here
+                    Log.d("ClickedWord", word)
+                    clickOnWord(word)
+                }
+            }
+            spannable.setSpan(clickableSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            start = end + 1  // Move start to the next word
+        }
+        textView.text = spannable
+
+        // Enable clickable spans within the TextView
+        textView.movementMethod = LinkMovementMethod.getInstance()
+    }
+
+
+    var mainText: TextView? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mainText:TextView = view.findViewById(R.id.text_home)
+        val mainText: TextView = view.findViewById(R.id.text_home)
 
         networkScope.launch {
             val lyrics = translateText(searchLyrics())
             withContext(Dispatchers.Main) {
-                mainText.text = lyrics.replace("&#39;", "'").replace("&quot;", "\"").replace("\\n", "\n").replace("\\ n", "\n")
+                mainText.text =
+                    lyrics.replace("&#39;", "'").replace("&quot;", "\"").replace("\\n", "\n")
+                        .replace("\\ n", "\n")
+
+                mainText.post { makeWordsClickable(mainText) }
             }
         }
 
-        mainText.setMovementMethod(ScrollingMovementMethod())
+        mainText.movementMethod = ScrollingMovementMethod()
     }
 
     override fun onDestroyView() {
@@ -72,7 +113,8 @@ class HomeFragment : Fragment() {
     private suspend fun translateText(text: String?): String {
         return withContext(Dispatchers.IO) {
             try {
-                val translate = TranslateOptions.newBuilder().setApiKey(GoogleAPIkey).build().service
+                val translate =
+                    TranslateOptions.newBuilder().setApiKey(GoogleAPIkey).build().service
                 val detection: Detection = translate.detect(text)
                 val detectedLanguage = detection.language
                 val translation = translate.translate(
@@ -96,7 +138,11 @@ class HomeFragment : Fragment() {
             if (!results.isNullOrEmpty()) {
                 CoroutineScope(Dispatchers.IO).launch {
                     val websiteTextFetcher = WebsiteTextFetcher()
-                    val websiteText = websiteTextFetcher.parseLyrics(getLyricsFromSite(websiteTextFetcher.fetchTextFromUrl(results[0].url)))
+                    val websiteText = websiteTextFetcher.parseLyrics(
+                        getLyricsFromSite(
+                            websiteTextFetcher.fetchTextFromUrl(results[0].url)
+                        )
+                    )
                     deferred.complete(websiteText)
                 }
             } else {
@@ -108,7 +154,7 @@ class HomeFragment : Fragment() {
         return deferred.await()
     }
 
-    private fun getLyricsFromSite(text: String):String {
+    private fun getLyricsFromSite(text: String): String {
         val start: Int = text.indexOf('[')
         val end: Int = text.indexOf("Embed")
 
@@ -121,4 +167,29 @@ class HomeFragment : Fragment() {
 
         return str.substring(0, i - 1)
     }
+
+
+    // Then, you can use it in your clickOnWord function
+    fun clickOnWord(word: String) {
+        val translate = TranslateOptions.newBuilder().setApiKey("AIzaSyC6OOmcv32-NvpVqWm_6QXkwNflZu5HDN0").build().service
+
+        networkScope.launch {
+            try {
+                val translation = translate.translate(
+                    word,
+                    Translate.TranslateOption.targetLanguage("en")
+                )
+                val translatedWord = translation.translatedText
+
+                withContext(Dispatchers.Main) {
+                    // Update the TextView with the translated word if it's not null
+                    mainText?.append("$word -> $translatedWord\n")
+                }
+            } catch (e: Exception) {
+                Log.e("TranslationError", e.message ?: "Translation failed")
+            }
+        }
+    }
+
+
 }
