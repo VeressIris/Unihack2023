@@ -51,31 +51,28 @@ class HomeFragment : Fragment() {
         return root
     }
 
-    fun splitTextIntoWords(text: String): List<String> {
-        return text.split("[\\s]+".toRegex())
-    }
-
-    public fun makeWordsClickable(textView: TextView) {
+    fun makeWordsClickable(textView: TextView) {
         val spannable = Spannable.Factory.getInstance().newSpannable(textView.text)
-        val words = splitTextIntoWords(textView.text.toString())
+        val text = textView.text.toString()
+        val wordPattern = "\\b\\w+\\b".toRegex() // Regex to match words
 
-        var start = 0
-        words.forEach { word ->
-            val end = start + word.length
+        val matches = wordPattern.findAll(text)
+        matches.forEach { matchResult ->
+            val word = matchResult.value
+            val start = matchResult.range.first
+            val end = matchResult.range.last + 1
+
             val clickableSpan = object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    // Handle word click here
                     Log.d("ClickedWord", word)
                     clickOnWord(word)
                 }
             }
             spannable.setSpan(clickableSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            start = end + 1  // Move start to the next word
         }
-        textView.text = spannable
 
-        // Enable clickable spans within the TextView
-        textView.movementMethod = ScrollingMovementMethod.getInstance()
+        textView.text = spannable
+        textView.movementMethod = LinkMovementMethod.getInstance()
         textView.isVerticalScrollBarEnabled = true
     }
 
