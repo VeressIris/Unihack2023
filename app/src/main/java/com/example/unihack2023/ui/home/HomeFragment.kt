@@ -51,6 +51,8 @@ class HomeFragment : Fragment() {
         return root
     }
 
+    var startIndexOfClickedWord: Int = -1
+    var endIndexOfClickedWord: Int = -1
     fun makeWordsClickable(textView: TextView) {
         val spannable = Spannable.Factory.getInstance().newSpannable(textView.text)
         val text = textView.text.toString()
@@ -65,6 +67,8 @@ class HomeFragment : Fragment() {
             val clickableSpan = object : ClickableSpan() {
                 override fun onClick(widget: View) {
                     Log.d("ClickedWord", word)
+                    startIndexOfClickedWord = start
+                    endIndexOfClickedWord = end
                     clickOnWord(word)
                 }
             }
@@ -154,7 +158,24 @@ class HomeFragment : Fragment() {
     }
 
     fun clickOnWord(word: String) {
+        var translation:String? = null
+        networkScope.launch {
+            translation = translateWord(word, "en")
 
+            Log.d("TranslatedWord", translation.toString())
+
+            // Or update UI with the translated word
+            withContext(Dispatchers.Main) {
+                mainText?.text = replaceClickedWord(word, translation!!, mainText?.text.toString())
+            }
+        }
+    }
+
+    fun replaceClickedWord(clickedWord: String, translation: String, text:String):String {
+        val before = text.substring(0, startIndexOfClickedWord)
+        val after = text.substring(endIndexOfClickedWord)
+
+        return before + translation + after
     }
 
     public fun replaceSymbolsInLyrics(songName:String, targetLang: String) {
@@ -168,6 +189,17 @@ class HomeFragment : Fragment() {
                 mainText?.post { makeWordsClickable(mainText!!) }
             }
         }
+    }
+
+    public suspend fun translateWord(word: String, targetLang: String): String {
+        val deferred = CompletableDeferred<String>()
+
+        networkScope.launch {
+            val translatedWord = translateText(word, targetLang)
+            deferred.complete(translatedWord)
+        }
+
+        return deferred.await()
     }
 
     fun setMainTextUpdateCallback(callback: (String) -> Unit) {

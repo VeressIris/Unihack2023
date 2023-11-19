@@ -84,7 +84,6 @@ class MainActivity : AppCompatActivity() {
         //Search for song:
         searchBttn?.setOnClickListener {
             val songInput = toolbar.findViewById<TextInputEditText>(R.id.searchSong_txtBox)
-
             langCode = getLanguageCode()
 
             closeKeyboard(songInput)
