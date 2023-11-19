@@ -21,6 +21,7 @@ import android.view.inputmethod.InputMethodManager
 import com.google.android.material.textfield.TextInputEditText
 import android.widget.Spinner
 import android.widget.AdapterView
+import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
@@ -59,7 +60,6 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         val searchBttn = toolbar.findViewById<Button>(R.id.search_bttn)
         val targetLanguage = toolbar.findViewById<Spinner>(R.id.languageSelector)
@@ -83,6 +83,9 @@ class MainActivity : AppCompatActivity() {
             langCode = getLanguageCode()
 
             closeKeyboard(songInput)
+
+            val toast:Toast = Toast.makeText(this, "Searching...", Toast.LENGTH_LONG)
+            toast.show()
 
             homeFrag.replaceSymbolsInLyrics(songInput.text.toString(), langCode.toString())
         }
