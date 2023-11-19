@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.launch
+import android.text.SpannableString
 
 class HomeFragment : Fragment() {
 
@@ -74,6 +75,7 @@ class HomeFragment : Fragment() {
                     startIndexOfClickedWord = start
                     endIndexOfClickedWord = end
                     clickOnWord(word)
+                    makeWordsClickable(textView)
                 }
 
                 override fun updateDrawState(ds: TextPaint) {
@@ -186,7 +188,7 @@ class HomeFragment : Fragment() {
     }
 
     fun clickOnWord(word: String) {
-        var translation:String? = null
+        var translation: String? = null
         networkScope.launch {
             translation = translateWord(word, "en")
 
@@ -194,20 +196,26 @@ class HomeFragment : Fragment() {
 
             // Or update UI with the translated word
             withContext(Dispatchers.Main) {
-                mainText?.text = replaceClickedWord(word, translation!!, mainText?.text.toString())
+                if (translation != null) {
+                    replaceClickedWord(word, translation!!)
+                }
             }
         }
     }
 
-    fun replaceClickedWord(clickedWord: String, translation: String, text:String):String {
-        val before = text.substring(0, startIndexOfClickedWord)
-        val after = text.substring(endIndexOfClickedWord)
+    fun replaceClickedWord(clickedWord: String, translation: String) {
+        val text = mainText?.text.toString()
+        val startIndex = text.indexOf(clickedWord)
+        val endIndex = startIndex + clickedWord.length
 
-        return before + translation + after
+        if (startIndex != -1) {
+            val newText = text.substring(0, startIndex) + translation + text.substring(endIndex)
+            mainText?.text = newText
+            makeWordsClickable(mainText!!)
+        }
     }
 
     public fun replaceSymbolsInLyrics(songName:String, targetLang: String) {
-        Log.e("mainText", "i have been called " + mainText.toString())
         networkScope.launch {
             val lyrics = translateText(searchLyrics(songName), targetLang)
 
@@ -233,6 +241,4 @@ class HomeFragment : Fragment() {
     fun setMainTextUpdateCallback(callback: (String) -> Unit) {
         mainTextUpdateCallBack = callback
     }
-
-
 }
