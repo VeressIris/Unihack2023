@@ -16,7 +16,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#4CAF50"
+            android:background="#7AB807"
             app:popupTheme="@style/Theme.Unihack2023.PopupOverlay">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -27,13 +27,13 @@
                     android:id="@+id/textInputLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:paddingRight="8dp"
                     android:paddingLeft="8dp"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:paddingRight="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/languageSelector"
-                    app:layout_constraintWidth_percent="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    app:layout_constraintWidth_percent="0.5">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/searchSong_txtBox"
@@ -48,22 +48,29 @@
                     android:id="@+id/languageSelector"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
+                    android:entries="@array/languages"
+                    android:minHeight="48dp"
                     android:paddingLeft="8dp"
-                    app:layout_constraintEnd_toStartOf="@+id/search_bttn"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:entries="@array/languages" />
+                    app:layout_constraintEnd_toStartOf="@+id/search_bttn"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
                     android:id="@+id/search_bttn"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:backgroundTint="@color/cardview_shadow_end_color"
                     android:text="Button"
+                    android:visibility="visible"
+                    app:icon="?android:attr/actionModeWebSearchDrawable"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginEnd="8dp"
-                    android:visibility="visible" />
+                    app:layout_constraintVertical_bias="0.0"
+                    app:rippleColor="@color/purple_200"
+                    app:strokeColor="@color/teal_700"
+                    tools:visibility="visible" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -77,6 +84,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
+
         app:srcCompat="@android:drawable/ic_dialog_email" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
