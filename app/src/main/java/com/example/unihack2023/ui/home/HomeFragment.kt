@@ -1,5 +1,6 @@
 package com.example.unihack2023.ui.home
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
@@ -19,8 +20,11 @@ import kotlinx.coroutines.*
 import com.example.unihack2023.MainActivity
 import android.text.style.ClickableSpan
 import android.text.Spannable
+import android.text.TextPaint
 import com.google.cloud.translate.Translate
 import android.text.method.LinkMovementMethod
+import android.text.style.ForegroundColorSpan
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.launch
@@ -67,8 +71,21 @@ class HomeFragment : Fragment() {
                     Log.d("ClickedWord", word)
                     clickOnWord(word)
                 }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.isUnderlineText = false // Remove underline
+
+                    // You can also customize other text properties here if needed
+                }
             }
             spannable.setSpan(clickableSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannable.setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(textView.context, R.color.brown)),
+                start,
+                end,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
         }
 
         textView.text = spannable
@@ -76,6 +93,15 @@ class HomeFragment : Fragment() {
         textView.isVerticalScrollBarEnabled = true
     }
 
+    fun makeWordsNarrower(textView: TextView) {
+        val scaleValue = 0.8f // Adjust this value to scale the width (0.8f reduces to 80% of the original width)
+        textView.scaleX = scaleValue
+        textView.scaleY = 0.9f // Maintain the original height
+
+        // Other text customization if needed
+        textView.setTextColor(ContextCompat.getColor(textView.context, R.color.black))
+        // ... additional text properties
+    }
 
     public var mainText: TextView? = null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -86,6 +112,8 @@ class HomeFragment : Fragment() {
         mainText!!.movementMethod = ScrollingMovementMethod()
 
         mainTextUpdateCallBack?.invoke("init text")
+
+        makeWordsNarrower(mainText!!)
     }
 
     override fun onDestroyView() {
